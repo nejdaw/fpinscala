@@ -25,9 +25,9 @@ object ImperativeAndLazyIO {
     try {
       var count = 0
       // Obtain a stateful iterator from the Source
-      val lines: Iterator[String] = src.getLines
+      val lines: Iterator[String] = src.getLines()
       while (count <= 40000 && lines.hasNext) {
-        lines.next // has side effect of advancing to next element
+        lines.next() // has side effect of advancing to next element
         count += 1
       }
       count > 40000
@@ -55,10 +55,10 @@ object ImperativeAndLazyIO {
    */
 
   object Examples {
-    val lines: Stream[String] = sys.error("defined elsewhere")
-    val ex1                   = lines.zipWithIndex.exists(_._2 + 1 >= 40000)
-    val ex2                   = lines.filter(!_.trim.isEmpty).zipWithIndex.exists(_._2 + 1 >= 40000)
-    val ex3                   = lines.take(40000).map(_.head).indexOfSlice("abracadabra".toList)
+    val lines: LazyList[String] = sys.error("defined elsewhere")
+    val ex1                     = lines.zipWithIndex.exists(_._2 + 1 >= 40000)
+    val ex2                     = lines.filter(!_.trim.isEmpty).zipWithIndex.exists(_._2 + 1 >= 40000)
+    val ex3                     = lines.take(40000).map(_.head).indexOfSlice("abracadabra".toList)
   }
 
   /*
@@ -68,9 +68,9 @@ object ImperativeAndLazyIO {
 
    */
 
-  def lines(filename: String): IO[Stream[String]] = IO {
+  def lines(filename: String): IO[LazyList[String]] = IO {
     val src = io.Source.fromFile(filename)
-    src.getLines.toStream append { src.close; Stream.empty }
+    src.getLines().to(LazyList) appendedAll { src.close; LazyList.empty }
   }
   /*
 
@@ -97,15 +97,15 @@ object SimpleStreamTransducers {
     import Process._
 
     /*
-     * A `Process[I,O]` can be used to transform a `Stream[I]` to a
-     * `Stream[O]`.
+     * A `Process[I,O]` can be used to transform a `LazyList[I]` to a
+     * `LazyList[O]`.
      */
-    def apply(s: Stream[I]): Stream[O] = this match {
-      case Halt() => Stream()
+    def apply(s: LazyList[I]): LazyList[O] = this match {
+      case Halt() => LazyList()
       case Await(recv) =>
         s match {
           case h #:: t => recv(Some(h))(t)
-          case xs      => recv(None)(xs) // Stream is empty
+          case xs      => recv(None)(xs) // LazyList is empty
         }
       case Emit(h, t) => h #:: t(s)
     }
@@ -370,13 +370,13 @@ object SimpleStreamTransducers {
           case Halt() => acc
           case Await(recv) =>
             val next =
-              if (ss.hasNext) recv(Some(ss.next))
+              if (ss.hasNext) recv(Some(ss.next()))
               else recv(None)
             go(ss, next, acc)
           case Emit(h, t) => go(ss, t, g(acc, h))
         }
       val s = io.Source.fromFile(f)
-      try go(s.getLines, p, z)
+      try go(s.getLines(), p, z)
       finally s.close
     }
 
@@ -721,8 +721,8 @@ object GeneralizedStreamTransducers {
      */
     def lines(filename: String): Process[IO, String] =
       resource { IO(io.Source.fromFile(filename)) } { src =>
-        lazy val iter = src.getLines // a stateful iterator
-        def step      = if (iter.hasNext) Some(iter.next) else None
+        lazy val iter = src.getLines() // a stateful iterator
+        def step      = if (iter.hasNext) Some(iter.next()) else None
         lazy val lines: Process[IO, String] = eval(IO(step)).flatMap {
           case None       => Halt(End)
           case Some(line) => Emit(line, lines)

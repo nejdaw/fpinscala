@@ -67,7 +67,7 @@ object Monad {
 
   val optionMonad: Monad[Option] = ???
 
-  val streamMonad: Monad[Stream] = ???
+  val streamMonad: Monad[LazyList] = ???
 
   val listMonad: Monad[List] = ???
 

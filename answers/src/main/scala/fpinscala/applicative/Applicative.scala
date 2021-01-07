@@ -81,14 +81,14 @@ case class Failure[E](head: E, tail: Vector[E]) extends Validation[E, Nothing]
 case class Success[A](a: A) extends Validation[Nothing, A]
 
 object Applicative {
-  val streamApplicative = new Applicative[Stream] {
+  val streamApplicative = new Applicative[LazyList] {
 
-    def unit[A](a: => A): Stream[A] =
-      Stream.continually(a) // The infinite, constant stream
+    def unit[A](a: => A): LazyList[A] =
+      LazyList.continually(a) // The infinite, constant stream
 
-    override def map2[A, B, C](a: Stream[A], b: Stream[B])( // Combine elements pointwise
+    override def map2[A, B, C](a: LazyList[A], b: LazyList[B])( // Combine elements pointwise
         f: (A, B) => C
-    ): Stream[C] =
+    ): LazyList[C] =
       a zip b map f.tupled
   }
 

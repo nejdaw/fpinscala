@@ -6,17 +6,20 @@ lazy val root = (project in file("."))
   .aggregate(exercises, answers)
   .settings(commonSettings)
   .settings(
-    name := "fpinscala"
+    name := "fpinscala",
+    scalacOptions += "-deprecation"
   )
 
 lazy val exercises = (project in file("exercises"))
   .settings(commonSettings)
   .settings(
-    name := "exercises"
+    name := "exercises",
+    scalacOptions += "-deprecation"
   )
 
 lazy val answers = (project in file("answers"))
   .settings(commonSettings)
   .settings(
-    name := "answers"
+    name := "answers",
+    scalacOptions += "-deprecation"
   )

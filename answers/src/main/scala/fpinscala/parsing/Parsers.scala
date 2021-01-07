@@ -193,7 +193,7 @@ case class Location(input: String, offset: Int = 0) {
 
   /* Returns the line corresponding to this location */
   def currentLine: String =
-    if (input.length > 1) input.linesIterator.drop(line - 1).next
+    if (input.length > 1) input.linesIterator.drop(line - 1).next()
     else ""
 
   def columnCaret = (" " * (col - 1)) + "^"
@@ -239,9 +239,9 @@ case class ParseError(stack: List[(Location, String)] = List()) {
    * messages at the same location have their messages merged,
    * separated by semicolons */
   def collapseStack(s: List[(Location, String)]): List[(Location, String)] =
-    s.groupBy(_._1).mapValues(_.map(_._2).mkString("; ")).toList.sortBy(_._1.offset)
+    s.groupBy(_._1).view.mapValues(_.map(_._2).mkString("; ")).toList.sortBy(_._1.offset)
 
-  def formatLoc(l: Location): String = l.line + "." + l.col
+  def formatLoc(l: Location): String = s"${l.line}.${l.col}"
 }
 
 object Parsers {}
