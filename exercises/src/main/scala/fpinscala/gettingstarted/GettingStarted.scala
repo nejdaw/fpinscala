@@ -1,5 +1,7 @@
 package fpinscala.gettingstarted
 
+import scala.annotation.tailrec
+
 // A comment!
 /* Another comment */
 /** A documentation comment */
@@ -18,7 +20,7 @@ object MyModule {
 
   // A definition of factorial, using a local, tail recursive function
   def factorial(n: Int): Int = {
-    @annotation.tailrec
+    @tailrec
     def go(n: Int, acc: Int): Int =
       if (n <= 0) acc
       else go(n - 1, n * acc)
@@ -36,7 +38,14 @@ object MyModule {
 
   // Exercise 1: Write a function to compute the nth fibonacci number
 
-  def fib(n: Int): Int = ???
+  def fib(n: Int): Int = {
+    @tailrec
+    def loop(n: Int, prev: Int, curr: Int): Int = {
+      if (n == 0) prev
+      else loop(n - 1, curr, prev + curr)
+    }
+    loop(n, 0, 1)
+  }
 
   // This definition and `formatAbs` are very similar..
   private def formatFactorial(n: Int) = {
