@@ -14,7 +14,10 @@ lazy val exercises = (project in file("exercises"))
   .settings(commonSettings)
   .settings(
     name := "exercises",
-    scalacOptions += "-deprecation"
+    scalacOptions += "-deprecation",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.2.3" % Test
+    )
   )
 
 lazy val answers = (project in file("answers"))
