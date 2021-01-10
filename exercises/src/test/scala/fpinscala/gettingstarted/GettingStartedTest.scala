@@ -1,6 +1,6 @@
 package fpinscala.gettingstarted
 
-import fpinscala.gettingstarted.PolymorphicFunctions.{curry, isSorted}
+import fpinscala.gettingstarted.PolymorphicFunctions.{curry, isSorted, uncurry}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -19,6 +19,15 @@ class GettingStartedTest extends AnyWordSpec with Matchers {
         val result = curry[Int, Int, Int](_ + _)
         result shouldBe a[Int => Int => Int]
         result(1)(2) shouldBe 3
+      }
+    }
+    "uncurry" which {
+      "reverses curry" in {
+        val f      = (i: Int, j: Int) => i + j
+        val result = uncurry(curry(f))
+        result shouldBe a[(Int, Int) => Int]
+        result(1, 2) shouldBe 3
+
       }
     }
   }
