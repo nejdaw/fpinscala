@@ -1,6 +1,6 @@
 package fpinscala.gettingstarted
 
-import fpinscala.gettingstarted.PolymorphicFunctions.{curry, isSorted, uncurry}
+import fpinscala.gettingstarted.PolymorphicFunctions.{compose, curry, isSorted, uncurry}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -28,6 +28,14 @@ class GettingStartedTest extends AnyWordSpec with Matchers {
         result shouldBe a[(Int, Int) => Int]
         result(1, 2) shouldBe 3
 
+      }
+    }
+    "compose" which {
+      "combines two functions" in {
+        val f      = (i: Int) => i.toString
+        val g      = (s: String) => s.length
+        val result = compose(g, f)
+        result(1234) shouldBe 4
       }
     }
   }
