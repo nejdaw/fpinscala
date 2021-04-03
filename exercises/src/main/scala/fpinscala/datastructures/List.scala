@@ -49,13 +49,15 @@ object List { // `List` companion object. Contains functions for creating and wo
   def product2(ns: List[Double]) =
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
-
   def tail[A](l: List[A]): List[A] = l match {
-    case Nil        => Nil
+    case Nil        => sys.error("tail on empty list")
     case Cons(_, t) => t
   }
 
-  def setHead[A](l: List[A], h: A): List[A] = ???
+  def setHead[A](l: List[A], h: A): List[A] = l match {
+    case Nil           => sys.error("setHead on empty list")
+    case Cons(_, tail) => Cons(h, tail)
+  }
 
   def drop[A](l: List[A], n: Int): List[A] = ???
 
